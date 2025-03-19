@@ -8,7 +8,7 @@ const Header = () => {
     useEffect(() => {
         try{
             authApi.me().then(res => {
-                console.log(res)
+                console.log(res.data.messages[0])
                 if(res.data.resultCode===0){
                     setIsAuthorized(true)
                     setLogin(res.data.data.login)

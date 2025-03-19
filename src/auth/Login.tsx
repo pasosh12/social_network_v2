@@ -12,28 +12,43 @@ export const Login = (props: PropsType) => {
     const [rememberMe, setrememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [authorized, setAuthorized] = useState<boolean>(false);
-    // useEffect(() => {
-    const onInputHandler = (e: ChangeEvent<HTMLInputElement> ) => {
+    useEffect(() => {
+        try {
+            authApi.me().then((res) => {
+                if (res.status === 200) console.log('authorized')
+                else console.log(res)
+            })
 
+        } catch (e) {
+            console.error(e)
+        }
+    }, [])
+
+    const onEmailHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setEmail(e.currentTarget.value)
+    }
+    const onPasswordHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.currentTarget.value)
     }
     loginApi.login(email, password, rememberMe).then((res) => {
 
-            console.log(res);
+            console.log(res.data.messages);
         }
     )
 
-return (
-    <div>
+    return (
         <div>
-            <input onChange={(e)=>onInputHandler(e)} type={"email"} placeholder={'Enter email'}></input>
+            <form>
+                <input onChange={(e) =>
+                    onEmailHandler(e)} type={"email"} placeholder={'Enter email'}></input>
 
-            <input onChange={onInputHandler} type={'password'} placeholder={'Enter password'}></input>
-            Remember me <input onChange={onInputHandler} type={'checkbox'}/>
+                <input onChange={onPasswordHandler} type={'password'} placeholder={'Enter password'}></input>
+                Remember me <input type={'checkbox'}/>
+                <button type={'submit'}>Log In</button>
+            </form>
+            {/*<a href={loginEndpoint}>*/}
+            {/*</a>*/}
         </div>
-        {/*<a href={loginEndpoint}>*/}
-        <a>Log In</a>
-        {/*</a>*/}
-    </div>
-);
+    );
 }
 
