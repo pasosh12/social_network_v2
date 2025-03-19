@@ -1,5 +1,6 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {usersApi} from "./usersApi";
+import {useNavigate} from "react-router-dom";
 
 export type UserType = {
     id: number,
@@ -12,6 +13,7 @@ export type UserType = {
     followed: boolean,
 }
 export const Users = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState<UserType[]>([]);
     const [currentPage, setCurentPage] = useState<number>(1);
     const [pagesTotalCount, setPagesTotalCount] = useState<number>(1);
@@ -27,7 +29,7 @@ export const Users = () => {
             }
         )
     }, [currentPage,membersOnPage])
-    // debugger
+
     const onDecPage = () => {
         if (currentPage !==1) setCurentPage(currentPage - 1);
     }
@@ -36,6 +38,11 @@ export const Users = () => {
     }
     const handleSelectchange = (event:ChangeEvent<HTMLSelectElement>)=>{
         setMembersOnPage(Number(event.target.value))
+    }
+    const onUserClick=(id:number)=>{
+        // <Navigate to={<Profile/>}/>
+        navigate(`/profile/${id}`)
+        // <Profile userId={id}/>
     }
     return (
         <div>
@@ -55,7 +62,9 @@ export const Users = () => {
                                 style={{width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px"}}
                             />
                         ) : null}
-                        <span>{u.name}</span>
+                        <span
+                        style={{cursor:"pointer"}}
+                            onClick={()=>onUserClick(u.id)}>{u.name}</span>
                     </li>
                 ))}
             </ul>
