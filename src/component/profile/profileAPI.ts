@@ -17,37 +17,24 @@ export const profileAPI = {
     getUser(userId: number) {
         return instance.get <GetUserResponseType>(`/profile/${userId}`)
     },
-    updateProfile(
-        userId: number,
-        aboutMe: string,
-        lookingForAJob: boolean,
-        lookingForAJobDescription: string,
-        fullName: string,
-        github: string,
-        vk: string,
-        facebook: string,
-        instagram: string,
-        twitter: string,
-        website: string,
-        youtube: string,
-        mainLink: string,
-    ) {
+    updateProfile(profile: ProfileType) {
 
         return instance.put<BaseResponse>('/profile',
-            {
-                aboutMe,
-                userId: 20230,
-                lookingForAJob, lookingForAJobDescription, fullName,
-                contacts: {
-                    github, vk, facebook, instagram,
-                    twitter, website, youtube, mainLink,
-
-                }
-
-
-            })
+            {...profile}
+        )
     },
     updateStatus(newStatus: string,) {
-        return instance.put<BaseResponse>(`/profile/status`, {newStatus})
+        return instance.put<BaseResponse>(`/profile/status`, {status: newStatus})
+    },
+
+    uploadPhoto(file: File) {
+        const formData = new FormData();
+        formData.append("photos", file);
+        return instance.put('/profile/photo', formData, {
+            headers: {
+                ...instance.arguments.headers,
+                'Content-Type': 'multipart/form-data'
+            }
+        })
     }
 }

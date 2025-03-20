@@ -26,10 +26,8 @@ export type ProfileType = {
         large?: string,
     }
 }
-type PropsType = {
-    userId?: number,
-}
-export const Profile = (props: PropsType) => {
+
+export const Profile = () => {
     const {id} = useParams<{ id: string }>();
     const [profileEdited, setProfileEdited] = useState(false);
     const emptyProfile = useMemo(() => createEmptyProfile(), [])
@@ -39,8 +37,8 @@ export const Profile = (props: PropsType) => {
     useEffect(() => {
         try {
             profileAPI.getUser(Number(id) || 20230).then(data => {
-                console.log('got data: ', data.data)
                 // setProfileData(data.data)
+                console.log(data.data)
                 setProfileData(data.data)
                 setServerProfile(data.data)
             })
@@ -48,25 +46,25 @@ export const Profile = (props: PropsType) => {
         } catch {
             console.log("Error getting user data");
         }
-    }, [id])
+    }, [])
     useEffect(() => {
         setProfileEdited(
             !isEqual(serverProfile, profile)
         )
     }, [profile, serverProfile])
-    // const updateProfile = async () => {
-    //     try {
-    //         await profileAPI.updateProfile(profile).then(r => {
-    //             console.log('update profile info: ', r.data)
-    //             setProfileData(r.data)
-    //         })
-    //     } catch (e) {
-    //         console.error('update profile error ', e)
-    //     }
-    // }
-    const updateStatus = (newStatus: string) => {
+    const updateProfile = async () => {
         try {
-            profileAPI.updateStatus(newStatus)
+            await profileAPI.updateProfile(profile).then(r => {
+                console.log('update profile info: ', r.data)
+                // setProfileData(r.data)
+            })
+        } catch (e) {
+            console.error('update profile error ', e)
+        }
+    }
+    const updateStatus = async (newStatus: string) => {
+        try {
+           await profileAPI.updateStatus(newStatus).then(()=>console.log("Successfully updated status"));
         } catch (e) {
             console.error(e)
         }
@@ -77,7 +75,7 @@ export const Profile = (props: PropsType) => {
                 [field]: value
             })
         )
-        // updateProfile(profile)
+
     }, [profile])
 
 
@@ -91,12 +89,18 @@ export const Profile = (props: PropsType) => {
 
     const handleStatusChange = useCallback((newStatus: string) => {
         updateProfileData('aboutMe', newStatus)
-    }, [updateProfileData])
+        console.log(newStatus)
+        // updateStatus(newStatus)
+    }, [updateStatus])
+
     const uploadPhoto = (file: any) => {
 
     }
+    const updateProfileInfoHandler = ()=>{
+        updateProfile().then(r => console.log('r',r))
+        setProfileEdited(false)
+    }
 
-    console.log('profile component render')
 
     if (!profile) {
         return <div>Loading...</div>;
@@ -105,7 +109,7 @@ export const Profile = (props: PropsType) => {
         <div>
             <div>{id}</div>
             <div>Full Name: {profile.fullName}</div>
-            <div><img src={profile.photos.large}/></div>
+            <div><img alt={profile.aboutMe} src={profile.photos.large}/></div>
             {/*<button onClick={() => uploadPhoto(a)}>Upload Photo</button>*/}
             <div>About Me:
                 <EditableSpan onChange={(newValue: string) => handleStatusChange(newValue)}
@@ -133,7 +137,7 @@ export const Profile = (props: PropsType) => {
                 {
                     profileEdited ?
                         // <button onClick={updateProfile}>Save Profile Info</button>
-                        <button>Save Profile Info</button>
+                        <button onClick={updateProfileInfoHandler}>Save Profile Info</button>
                         : <></>
                 }
 
