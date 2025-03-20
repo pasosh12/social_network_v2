@@ -28,11 +28,15 @@ export const profileAPI = {
     },
 
     uploadPhoto(file: File) {
+        if(!file){
+            alert(" Please select a file first! ")
+        }
         const formData = new FormData();
-        formData.append("photos", file);
+        formData.append("image", file);
+        console.log(typeof formData);
+
         return instance.put('/profile/photo', formData, {
             headers: {
-                ...instance.arguments.headers,
                 'Content-Type': 'multipart/form-data'
             }
         })

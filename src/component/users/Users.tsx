@@ -1,6 +1,7 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {usersApi} from "./usersApi";
 import {useNavigate} from "react-router-dom";
+import defaultImage from '../../assets/default-user.jpg'
 
 export type UserType = {
     id: number,
@@ -18,8 +19,8 @@ export const Users = () => {
     const [currentPage, setCurentPage] = useState<number>(1);
     const [pagesTotalCount, setPagesTotalCount] = useState<number>(1);
     const [membersOnPage, setMembersOnPage] = useState<number>(10);
-    useEffect(() => {
-        usersApi.getUsers(membersOnPage, currentPage).then((res) => {
+    useEffect(  () => {
+           usersApi.getUsers(membersOnPage, currentPage).then((res) => {
                 // debugger
                 if (res.status === 200) {
                     setUsers(res.data.items)
@@ -61,7 +62,12 @@ export const Users = () => {
                                 alt={u.name}
                                 style={{width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px"}}
                             />
-                        ) : null}
+                        )
+                            :
+                            <img style={{width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px"}}
+                                 alt={u.name}
+                                 src={defaultImage}/>
+                        }
                         <span
                         style={{cursor:"pointer"}}
                             onClick={()=>onUserClick(u.id)}>{u.name}</span>

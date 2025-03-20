@@ -5,6 +5,8 @@ import EditableSpan from "../EditableSpan";
 import {createEmptyProfile,} from "./createEmptyProfile";
 import isEqual from 'fast-deep-equal';
 
+import FileUploader from "./FileUploader";
+
 export type ProfileType = {
     userId: number,
     aboutMe: string,
@@ -46,7 +48,7 @@ export const Profile = () => {
         } catch {
             console.log("Error getting user data");
         }
-    }, [])
+    }, [id])
     useEffect(() => {
         setProfileEdited(
             !isEqual(serverProfile, profile)
@@ -64,7 +66,7 @@ export const Profile = () => {
     }
     const updateStatus = async (newStatus: string) => {
         try {
-           await profileAPI.updateStatus(newStatus).then(()=>console.log("Successfully updated status"));
+            await profileAPI.updateStatus(newStatus).then(() => console.log("Successfully updated status"));
         } catch (e) {
             console.error(e)
         }
@@ -76,7 +78,7 @@ export const Profile = () => {
             })
         )
 
-    }, [profile])
+    }, [])
 
 
     const updateNestedField = useCallback((section: string, field: string, value: any) => {
@@ -91,13 +93,11 @@ export const Profile = () => {
         updateProfileData('aboutMe', newStatus)
         console.log(newStatus)
         // updateStatus(newStatus)
-    }, [updateStatus])
+    }, [updateStatus,updateProfileData])
 
-    const uploadPhoto = (file: any) => {
 
-    }
-    const updateProfileInfoHandler = ()=>{
-        updateProfile().then(r => console.log('r',r))
+    const updateProfileInfoHandler = () => {
+        updateProfile().then(r => console.log('r', r))
         setProfileEdited(false)
     }
 
@@ -109,8 +109,9 @@ export const Profile = () => {
         <div>
             <div>{id}</div>
             <div>Full Name: {profile.fullName}</div>
-            <div><img alt={profile.aboutMe} src={profile.photos.large}/></div>
-            {/*<button onClick={() => uploadPhoto(a)}>Upload Photo</button>*/}
+            <div><img style={{height: "250px", borderRadius: "6px"}} alt={profile.fullName}
+                      src={profile.photos.large ? profile.photos.large : ''}/></div>
+            <FileUploader/>
             <div>About Me:
                 <EditableSpan onChange={(newValue: string) => handleStatusChange(newValue)}
                               value={profile.aboutMe}/>
@@ -131,7 +132,7 @@ export const Profile = () => {
 
             </ul>
             <div>
-                <input type={'checkbox'} checked={profile.lookingForAJob}/>
+                <input type={'checkbox'} defaultChecked={profile.lookingForAJob}/>
                 <span
                     style={{opacity: profile.lookingForAJobDescription ? 0.5 : 0.5}}> Looking for a job: "{profile.lookingForAJobDescription}"</span>
                 {
